@@ -9,8 +9,9 @@ export async function authenticate(
 ): Promise<IUserModel | null> {
 	const usersCollection = db.collection<IUserModel>('users')
 	const user = await usersCollection.findOne({ username })
-	if (user && (await bcrypt.compare(plainPassword, user.password))) {
-		return user
+	if (user && (await bcrypt.compare(plainPassword, user.password as string))) {
+		const { password, ...safeUser } = user
+		return safeUser
 	}
 	return null
 }
@@ -49,7 +50,10 @@ export async function getByEmail(
 		.then((user) => user || null)
 }
 
-export async function insert(db: Db, params: IUserModel): Promise<IUserModel | boolean> {
+export async function insert(
+	db: Db,
+	params: IUserModel,
+): Promise<IUserModel | boolean> {
 	const usersCollection = db.collection<IUserModel>('users')
 
 	if (await usersCollection.findOne({ username: params.username })) {
@@ -107,7 +111,7 @@ export async function updatePassword(
 	const usersCollection = db.collection<IUserModel>('users')
 	const user = await usersCollection.findOne(new ObjectId(id))
 	if (!user) return false
-	const matched = await bcrypt.compare(oldPassword, user.password)
+	const matched = await bcrypt.compare(oldPassword, user.password as string)
 	if (!matched) return false
 	const password = await bcrypt.hash(newPassword, 10)
 	await usersCollection.updateOne(

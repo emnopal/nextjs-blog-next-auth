@@ -3,8 +3,8 @@ export interface IUserModel {
 	username: string
 	name: string
 	email: string
-	password: string
-	role: string
+	password?: string
+	role: number
 	isDeleting?: boolean
 }
 
