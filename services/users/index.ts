@@ -25,6 +25,7 @@ export async function LoginHandler(
 
 export async function RegisterHandler(body: IUserModel) {
 	try {
+		body.role = 1
 		const res = await fetch('api/auth/register', {
 			method: 'POST',
 			headers: {
@@ -41,6 +42,20 @@ export async function RegisterHandler(body: IUserModel) {
 			return 'User registration failed.'
 		}
 
+	} catch (error) {
+		return error as string
+	}
+}
+
+export async function Protected() {
+	try {
+		const res = await fetch('api', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+		return res.json()
 	} catch (error) {
 		return error as string
 	}
