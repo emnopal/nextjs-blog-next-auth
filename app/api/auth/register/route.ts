@@ -3,7 +3,7 @@ import { IUserModel } from '@/models/users'
 import { NextResponse } from 'next/server'
 import { insert } from '@/repository/users'
 
-export async function POST(req: Request) {
+export async function register(req: Request) {
 	try {
 		const { username, name, email, password, role } =
 			(await req.json()) as IUserModel
@@ -38,3 +38,5 @@ export async function POST(req: Request) {
 		)
 	}
 }
+
+export { register as POST }

@@ -4,7 +4,7 @@ import { AuthOptions, getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
 import { authOptions } from './auth/[...nextauth]/route'
 
-export async function GET(
+export async function protectedPing(
 	req: NextApiRequest
 ) {
     const session = await getServerSession(authOptions as AuthOptions)
@@ -19,3 +19,5 @@ export async function GET(
         { status: 200 },
     )
 }
+
+export { protectedPing as GET }
