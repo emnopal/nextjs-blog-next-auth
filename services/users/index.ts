@@ -1,4 +1,5 @@
 import { IUserModel } from '@/models/users'
+import axios from 'axios'
 import { signIn } from 'next-auth/react'
 
 export async function LoginHandler(
@@ -25,21 +26,26 @@ export async function LoginHandler(
 
 export async function RegisterHandler(body: IUserModel) {
 	try {
-		body.role = 1
-		const res = await fetch('api/auth/register', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(body),
-		})
 
-		if (res.ok) {
-			return 'OK'
-		} else if (res.status === 409) {
-			return `User ${body.username} already registered.`
-		} else {
-			return 'User registration failed.'
+		body.role = 1
+
+		const res = await axios.post(
+			'api/auth/register', JSON.stringify(body),
+			{
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			}
+		)
+
+		switch(res.status) {
+			case 200:
+			case 201:
+				return 'OK'
+			case 409:
+				return `User ${body.username} already registered.`
+			default:
+				return 'User registration failed.'
 		}
 
 	} catch (error) {
@@ -49,13 +55,18 @@ export async function RegisterHandler(body: IUserModel) {
 
 export async function Protected() {
 	try {
-		const res = await fetch('api', {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
+
+		const res = await axios.get(
+			'api',
+			{
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			},
-		})
-		return res.json()
+		)
+
+		return res.data
+
 	} catch (error) {
 		return error as string
 	}
